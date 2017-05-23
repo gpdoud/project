@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script src="http://code.jquery.com/jquery-3.1.0.min.js" type="text/javascript" ></script>	
+	<link href="" type="text/css" rel="stylesheet"></link>
+	<script src="db.js" type="text/javascript" ></script>	
+	<script lang="javascript">
+		$().ready(function() {
+			// Products
+			db.Product.forEach(function(product) {
+				console.log(product);
+			});
+			// Vendors
+			db.Vendor.forEach(function(vendor) {
+				console.log(vendor);
+			});
+		}); // ready
+	</script>
+	<style></style>
+</head>
+<body>
+</body>
+</html>
