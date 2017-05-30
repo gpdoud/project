@@ -17,12 +17,13 @@ go
 create table [user] (
 	ID int identity(1,1) primary key,
 	UserName varchar(20) not null,
-	Password varchar(10) not null,
+	Password varchar(10) not null, -- encrypt this? No
 	FirstName varchar(20) not null,
 	LastName varchar(20) not null,
 	Phone varchar(12),
-	Email varchar(75),
-	IsManager bit not null default 0
+	Email varchar(75) not null, -- required for password reset?
+	IsReviewer bit not null default 0,
+	IsAdmin bit not null default 0 -- to load tables?
 )
 
 create unique index idx_user_username
@@ -38,7 +39,7 @@ create table [vendor] (
 	Zip varchar(5) not null,
 	Phone varchar(12),
 	Email varchar(255),
-	IsPreApproved bit default 0
+	IsRecommended bit default 0 -- Purpose? vendors listed first
 )
 
 create unique index idx_vendor_code
@@ -48,7 +49,7 @@ create table [product] (
 	ID int identity(1,1) primary key,
 	VendorId int foreign key references [vendor](ID),
 	Name varchar(150) not null,
-	PartNumber varchar(50) not null,
+	VendorPartNumber varchar(50) not null,
 	Price decimal(10,2) not null default(0.0),
 	Unit varchar(10) not null default 'Each',
 	PhotoPath varchar(255)
@@ -57,16 +58,16 @@ create table [product] (
 create unique index idx_product_vendorid_partnumber
 	on [product] (VendorId asc, PartNumber asc)
 
-create table [request] (
+create table [purchaseRequest] (
 	ID int identity(1,1) primary key,
 	UserID int foreign key references [user](ID),
 	Description varchar(100),
-	Justification varchar(255),
+	Justification varchar(255) not null,
 	DateNeeded DateTime,
-	DeliveryMode varchar(25),
-	DocsAttached bit not null default 0,
-	Status varchar(10),
-	Total decimal(10,2) not null default 0.0,
+	DeliveryMode varchar(25), -- set of items in document
+	DocsAttached bit not null default 0, -- probably remove this
+	Status varchar(10), -- set of items in document
+	Total decimal(10,2) not null default 0.0, -- readonly from UI
 	SubmittedDate DateTime not null default getdate()
 )
 
