@@ -56,7 +56,7 @@ create table [product] (
 )
 
 create unique index idx_product_vendorid_partnumber
-	on [product] (VendorId asc, PartNumber asc)
+	on [product] (VendorId asc, VendorPartNumber asc)
 
 create table [purchaseRequest] (
 	ID int identity(1,1) primary key,
@@ -73,7 +73,7 @@ create table [purchaseRequest] (
 
 create table [line_item] (
 	ID int identity(1,1) primary key,
-	RequestID int foreign key references [request](ID),
+	RequestID int foreign key references [purchaseRequest](ID),
 	ProductID int foreign key references [product](ID),
 	Quantity int not null default 1
 )
@@ -81,3 +81,65 @@ create table [line_item] (
 create unique index idx_line_item_requestid_productid
 	on [line_item] (RequestId asc, ProductId asc)
 go
+-- load user
+insert into [user] (UserName, Password, FirstName, LastName, Phone, Email, IsReviewer)
+	values ('user1', 'password', 'Jane', 'Doe', '513-555-1212', 'jdoe@gmail.com', 1)
+
+insert into [user] (UserName, Password, FirstName, LastName, Phone, Email, IsReviewer)
+	values ('user2', 'password', 'Jim', 'Doe', '513-555-1212', 'jdoe@gmail.com', 0)
+
+insert into [user] (UserName, Password, FirstName, LastName, Phone, Email, IsReviewer)
+	values ('user3', 'password', 'James', 'Doe', '513-555-1212', 'jdoe@gmail.com', 0)
+
+-- load vendor
+insert into [vendor] (Code, Name, Address, City, State, Zip, Phone, Email, IsRecommended)
+	values ('AMAZ0001', 'Amazon', '123 Any Street', 'Cincinnati', 'OH', '45201', '513-555-1212', 'info@amazon.com', 1)
+
+insert into [vendor] (Code, Name, Address, City, State, Zip, Phone, Email, IsRecommended)
+	values ('TARG0100', 'Target', '123 Any Street', 'Cincinnati', 'OH', '45201', '513-555-1212', 'info@target.com', 1)
+
+insert into [vendor] (Code, Name, Address, City, State, Zip, Phone, Email, IsRecommended)
+	values ('COST0333', 'Costco', '123 Any Street', 'Cincinnati', 'OH', '45201', '513-555-1212', 'info@costco.com', 0)
+
+-- load product
+declare @amazonId int
+
+-- Amazon products - get the ID for Amazon
+select @amazonId = id from [vendor] where code = 'AMAZ0001'
+
+insert into [product] (VendorId, Name, VendorPartNumber, Price, Unit, PhotoPath)
+	values (@amazonId, 'Echo', 'AMZN-Echo', 99.99, 'Each', NULL)
+
+insert into [product] (VendorId, Name, VendorPartNumber, Price, Unit, PhotoPath)
+	values (@amazonId, 'Prime', 'AMZN-Prime', 10.99, 'Month', NULL)
+
+insert into [product] (VendorId, Name, VendorPartNumber, Price, Unit, PhotoPath)
+	values (@amazonId, 'AWS', 'AMZN-AWS', 0.00, 'Subscript', NULL)
+
+declare @targetId int
+
+-- Target products - get the ID for Target
+select @targetId = id from [vendor] where code = 'TARG0100'
+
+insert into [product] (VendorId, Name, VendorPartNumber, Price, Unit, PhotoPath)
+	values (@targetId, 'Writing Desk', 'TARG-Desk', 619.99, 'Each', NULL)
+
+insert into [product] (VendorId, Name, VendorPartNumber, Price, Unit, PhotoPath)
+	values (@targetId, 'Chair', 'TARG-Chair', 254.99, 'Each', NULL)
+
+insert into [product] (VendorId, Name, VendorPartNumber, Price, Unit, PhotoPath)
+	values (@targetId, 'Bookcase', 'TARG-BCase', 799.99, 'Each', NULL)
+
+declare @costcoId int
+
+-- Target products - get the ID for Target
+select @costcoId = id from [vendor] where code = 'COST0333'
+
+insert into [product] (VendorId, Name, VendorPartNumber, Price, Unit, PhotoPath)
+	values (@costcoId, 'Filing Cabinet', 'COST-Cabinet', 3299.99, 'Each', NULL)
+
+insert into [product] (VendorId, Name, VendorPartNumber, Price, Unit, PhotoPath)
+	values (@costcoId, 'Cubicle', 'TARG-Cube', 1048.99, 'Each', NULL)
+
+insert into [product] (VendorId, Name, VendorPartNumber, Price, Unit, PhotoPath)
+	values (@costcoId, 'Conf Table', 'TARG-Table', 1689.99, 'Each', NULL)
